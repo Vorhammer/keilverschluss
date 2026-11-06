@@ -1,0 +1,253 @@
+<title>Keilverschluss Fräser</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap">
+<style>
+/* Werkstattzeichnung auf Schwarz: links Steuerung, rechts Ergebnis; auf dem Handy bleibt die Steuerung oben stehen */
+:root {
+  --bg: #0B0B0B;
+  --fg: #EDEDEA;
+  --mu: #7C7B77;
+  --hl: #2B2B29;
+  --rule: #3A3A38;
+  --track: #3A3A38;
+  --bubble: #1B1B1A;
+  --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --gl: max(16px, env(safe-area-inset-left, 0px));
+  --gr: max(16px, env(safe-area-inset-right, 0px));
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 13px; line-height: 1.4; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.page { max-width: 1600px; margin: 0 auto; padding-left: var(--gl); padding-right: var(--gr); padding-block: 8px 48px; }
+.layout { display: grid; grid-template-columns: 1fr; }
+.ctrl, .out { min-width: 0; }
+section { padding-block: 16px 20px; border-top: 1px solid var(--rule); min-width: 0; }
+h2 { font-weight: 300; font-size: 24px; letter-spacing: -0.02em; line-height: 1; margin: 0 0 14px; display: flex; align-items: center; gap: 10px; }
+.lbl { color: var(--mu); font-size: 12px; display: inline-flex; align-items: center; gap: 6px; position: relative; }
+h2 { position: relative; }
+.val { font-weight: 300; font-size: 20px; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.small { font-size: 11px; color: var(--mu); }
+.num { font-variant-numeric: tabular-nums; }
+.hint { color: var(--mu); font-size: 12px; margin-left: auto; font-weight: 400; letter-spacing: 0; }
+
+/* Info-Bubble */
+.info { position: static; display: inline-grid; place-items: center; width: 14px; height: 14px; border: 1px solid var(--mu); border-radius: 50%; font-size: 9px; font-weight: 500; color: var(--mu); cursor: help; letter-spacing: 0; flex: none; }
+.info:focus-visible { outline: 1px solid var(--fg); outline-offset: 2px; }
+.info .tip { display: none; position: absolute; top: calc(100% + 8px); left: 0; width: min(340px, calc(100vw - 32px)); background: var(--bubble); border: 1px solid var(--rule); color: var(--fg); padding: 12px 14px; font-size: 12px; line-height: 1.5; font-weight: 400; z-index: 30; text-align: left; }
+@media (hover: hover) { .info:hover .tip { display: block; } }
+.info:focus-visible .tip, .info.open .tip { display: block; }
+.tip svg { display: block; width: 100%; height: auto; margin-top: 10px; }
+
+/* Zeilen mit Regler */
+.ctl { display: grid; gap: 4px; padding-block: 8px; }
+.ctl .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.dual { position: relative; height: 30px; }
+.dual .track, .dual .fill { position: absolute; top: 14px; height: 2px; }
+.dual .track { left: 0; right: 0; background: var(--track); height: 1px; top: 14.5px; }
+.dual .fill { background: var(--fg); }
+.dual input[type=range] { position: absolute; inset: 0; width: 100%; margin: 0; background: none; pointer-events: none; -webkit-appearance: none; appearance: none; height: 30px; }
+.dual input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: var(--fg); border: 0; cursor: pointer; }
+.dual input[type=range]::-moz-range-thumb { pointer-events: auto; width: 16px; height: 16px; border-radius: 50%; background: var(--fg); border: 0; cursor: pointer; }
+.dual input[type=range]::-webkit-slider-runnable-track { background: none; }
+.dual input[type=range]::-moz-range-track { background: none; }
+.dual input:focus-visible::-webkit-slider-thumb { outline: 1px solid var(--fg); outline-offset: 3px; }
+.ticks { display: flex; justify-content: space-between; font-size: 10px; color: var(--mu); margin-top: -4px; }
+.detail svg { width: 100%; height: auto; display: block; }
+
+/* Fräser */
+.row { display: grid; grid-template-columns: 84px 1fr; align-items: center; gap: 8px; padding-block: 8px; border-bottom: 1px solid var(--hl); min-height: 44px; }
+.chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 20px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; }
+.chip .sw { width: 13px; height: 13px; flex: none; }
+.chip .v { font-weight: 300; font-size: 20px; line-height: 1; font-variant-numeric: tabular-nums; }
+.x { background: none; border: 0; color: var(--mu); font-size: 14px; cursor: pointer; padding: 2px 4px; line-height: 1; }
+.x:hover, .x:focus-visible { color: var(--fg); }
+.add { background: none; border: 0; color: var(--mu); font: inherit; font-size: 13px; cursor: pointer; padding: 4px 0; }
+.add:hover, .add:focus-visible { color: var(--fg); }
+.addform { display: inline-flex; align-items: center; gap: 8px; }
+.addform input { background: none; border: 0; border-bottom: 1px solid var(--fg); color: var(--fg); font: inherit; font-weight: 300; font-size: 20px; width: 64px; padding: 0 2px 2px; border-radius: 0; }
+.addform input:focus { outline: none; background: #141413; }
+.okb { background: none; border: 1px solid var(--mu); color: var(--fg); font: inherit; font-size: 12px; padding: 3px 8px; cursor: pointer; }
+
+/* Zielradius und Optimierung */
+.askrow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 2px; }
+.btn { background: none; border: 1px solid var(--mu); color: var(--fg); font: inherit; font-size: 12px; padding: 6px 12px; cursor: pointer; }
+.btn:hover, .btn:focus-visible { border-color: var(--fg); }
+.btn:disabled { opacity: .5; cursor: wait; }
+.vbtn { background: none; border: 1px solid var(--hl); color: var(--fg); font: inherit; font-size: 12px; padding: 5px 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.vbtn .sw { width: 11px; height: 11px; flex: none; }
+.vbtn { flex-wrap: wrap; text-align: left; }
+.vbtn .w { white-space: nowrap; }
+.vbtn .w { color: var(--mu); }
+.vbtn[aria-pressed="true"] { border-color: var(--fg); }
+.vbtn:hover, .vbtn:focus-visible { border-color: var(--mu); }
+.msg { color: var(--mu); font-size: 12px; }
+.raster { display: inline-flex; align-items: center; gap: 2px; margin-right: 8px; }
+.raster .lbl { margin-right: 4px; }
+.raster .val { font-size: 17px; min-width: 40px; text-align: center; }
+.stp { background: none; border: 1px solid var(--hl); color: var(--fg); font: inherit; font-size: 14px; width: 28px; height: 28px; cursor: pointer; line-height: 1; }
+.stp:hover, .stp:focus-visible { border-color: var(--mu); }
+.stp:disabled { color: var(--hl); cursor: default; }
+.fbrow { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.fbrow > .small:first-child { min-width: 96px; }
+#msg { flex-basis: 100%; order: 1; }
+.optlist { display: grid; gap: 6px; margin-top: 8px; }
+.optlist:empty { display: none; }
+.orow { display: flex; align-items: center; gap: 10px; }
+.orow > .small:first-child { width: 12px; text-align: right; }
+.ctrl .askrow + .askrow { margin-top: 6px; }
+
+/* Ergebnis */
+.chart svg { display: block; max-width: none; }
+.scen { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 16px; }
+.cell { border-top: 1px solid var(--hl); padding-block: 12px 10px; min-width: 0; display: grid; gap: 10px; align-content: start; }
+.cell svg { width: 100%; height: auto; display: block; }
+.cell .r { font-weight: 300; font-size: 18px; line-height: 1; font-variant-numeric: tabular-nums; }
+.cell .head { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
+.cell .r, .cell .head .small { white-space: nowrap; }
+.cell .head { flex-wrap: wrap; }
+.cell .sub { font-size: 10px; color: var(--mu); margin-top: 4px; }
+.cell.off .r { color: var(--mu); }
+
+/* Ein- und Ausklappen der Steuerung, nur auf dem Handy */
+.chead { display: none; background: none; border: 0; color: var(--mu); font: inherit; cursor: pointer; }
+.chead { width: 100%; align-items: center; gap: 12px; padding: 10px 0; text-align: left; }
+.chead .ttl { font-size: 17px; font-weight: 300; color: var(--fg); letter-spacing: -0.01em; flex: none; }
+.chead .sum { flex: 1; color: var(--mu) !important; min-width: 0; color: var(--fg); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.chead .chev { display: inline-grid; place-items: center; width: 28px; height: 28px; transition: transform .2s; }
+/* Handy und Tablet: Steuerung bleibt oben stehen */
+@media (max-width: 1099px) {
+  .ctrl { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); margin-left: calc(-1 * var(--gl)); margin-right: calc(-1 * var(--gr)); padding-left: var(--gl); padding-right: var(--gr); border-bottom: 1px solid var(--rule); box-shadow: 0 8px 16px -8px rgba(0, 0, 0, .8); }
+  .ctrl section { border-top: 0; padding-block: 4px 6px; }
+  .ctrl h2, .ctrl .detail { display: none; }
+  .ctrl .row { min-height: 36px; padding-block: 5px; }
+  .ctrl .ctl { padding-block: 4px; }
+  .ctrl .ticks { display: none; }
+  .out section:first-child, .out > section[hidden] + section { border-top: 0; }
+  .ctrl .row { grid-template-columns: 78px 1fr; }
+  .ctrl .chips { gap: 2px 12px; }
+  .ctrl .chip .v, .ctrl .val, .ctrl .addform input { font-size: 17px; }
+  .ctrl .chip .sw { width: 11px; height: 11px; }
+  .ctrl .dual, .ctrl .dual input[type=range] { height: 26px; }
+  .ctrl .dual .track { top: 12.5px; } .ctrl .dual .fill { top: 12px; }
+  .ctrl .askrow { gap: 6px; }
+  .ctrl .add .t { display: none; }
+  .ctrl.collapsed section { display: none; }
+  .ctrl.collapsed .chev { transform: rotate(180deg); }
+  /* Kopfzeile mit Zusammenfassung, immer sichtbar */
+  .ctrl .chead { display: flex; border-bottom: 1px solid var(--hl); }
+  .ctrl.collapsed .chead { border-bottom: 0; }
+
+  .ctrl .fbrow > .small:first-child { min-width: 78px; }
+  .ctrl .fbrow { gap: 6px; }
+  .ctrl .add { font-size: 20px; padding: 0 6px; }
+  .ctrl .btn, .ctrl .vbtn { padding: 5px 9px; }
+}
+@media (max-width: 1099px) and (max-height: 560px) { .ctrl { position: static; box-shadow: none; } }
+/* Desktop: eine Seite im Querformat */
+@media (min-width: 1100px) {
+  .page { padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); padding-block: 16px 32px; }
+  .layout { grid-template-columns: minmax(330px, 380px) 1fr; gap: 0 48px; }
+  .ctrl section:first-child, .out section:first-child { border-top: 0; }
+  .scen { grid-template-columns: repeat(4, 1fr); gap: 0 24px; }
+  .cell .r { font-size: 20px; }
+  .ctrl .detail { display: none; }
+  .ctrl section { padding-block: 12px 14px; }
+  .ctrl .ctl { padding-block: 5px; }
+  .ctrl .row { min-height: 40px; padding-block: 6px; }
+}
+@media (pointer: coarse) {
+  .dual input[type=range]::-webkit-slider-thumb { width: 22px; height: 22px; }
+  .dual input[type=range]::-moz-range-thumb { width: 22px; height: 22px; }
+  .x { padding: 6px 5px; }
+  .stp { width: 34px; height: 34px; }
+}
+</style>
+
+<main class="page">
+  <div class="layout">
+    <div class="ctrl">
+      <button class="chead" id="ctrl-head" type="button" aria-label="Steuerung ein- oder ausklappen"><span class="ttl">Vorgaben</span><span class="sum" id="ctrl-sum"></span><span class="chev" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8"><path d="M1 6.5 6 1.5l5 5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></span></button>
+      <section id="s-vorgaben">
+        <h2>Vorgaben</h2>
+        <div class="ctl">
+          <div class="top">
+            <div class="lbl">Lamellenbreite <span class="info" tabindex="0">i<span class="tip">Breite an der Lamellenoberseite. Breitere Lamellen ergeben größere Radien, schmalere sind weniger facettiert. Gerechnet wird mit 8 mm Lamellenhöhe.<span id="detail-tip"></span></span></span></div>
+            <div class="val" id="bw-val">20 – 40 mm</div>
+          </div>
+          <div class="dual">
+            <div class="track"></div><div class="fill" id="bw-fill"></div>
+            <input type="range" id="bw-lo" min="20" max="60" step="1" value="20" aria-label="Lamellenbreite von">
+            <input type="range" id="bw-hi" min="20" max="60" step="1" value="40" aria-label="Lamellenbreite bis">
+          </div>
+          <div class="ticks"><span>20</span><span>60 mm</span></div>
+        </div>
+        <div class="detail" id="detail"></div>
+      </section>
+
+      <section id="s-fraeser">
+        <h2>Fräser</h2>
+        <div class="row">
+          <div class="lbl">Vorhanden <span class="info" tabindex="0">i<span class="tip">Fräser, die es schon gibt. Was mit ihnen möglich ist, erscheint voll gefärbt.</span></span></div>
+          <div class="chips" id="chips-ex"></div>
+        </div>
+        <div class="row">
+          <div class="lbl">Ergänzung <span class="info" tabindex="0">i<span class="tip">Fräser, die man anschaffen würde, im eingestellten Raster. Alles, was erst durch sie möglich wird, ist schraffiert. Von Hand eintragen oder aus der Optimierung übernehmen.</span></span></div>
+          <div class="chips" id="chips-add"></div>
+        </div>
+        <div class="ctl">
+          <div class="top">
+            <div class="lbl">Winkel neu <span class="info" tabindex="0">i<span class="tip">Bereich der Flankenwinkel, in dem Optimieren nach neuen Fräsern sucht. Vorhandene Fräser und Ergänzungen von Hand sind davon nicht betroffen.</span></span></div>
+            <div class="val" id="a-val">10° – 20°</div>
+          </div>
+          <div class="dual">
+            <div class="track"></div><div class="fill" id="a-fill"></div>
+            <input type="range" id="a-lo" min="0" max="32" step="0.5" value="10" aria-label="Winkel neuer Fräser von">
+            <input type="range" id="a-hi" min="0" max="32" step="0.5" value="20" aria-label="Winkel neuer Fräser bis">
+          </div>
+          <div class="ticks"><span>0°</span><span>32°</span></div>
+        </div>
+        <div class="ctl">
+          <div class="top">
+            <div class="lbl">Zielradius <span class="info" tabindex="0">i<span class="tip">Der Radiusbereich, den die Optimierung abdecken soll. Er erscheint im Abdeckungsdiagramm als gestricheltes Feld.</span></span></div>
+            <div class="val" id="t-val">R 1 000 – 2 000 mm</div>
+          </div>
+          <div class="dual">
+            <div class="track"></div><div class="fill" id="t-fill"></div>
+            <input type="range" id="t-lo" min="200" max="5000" step="10" value="1000" aria-label="Zielradius von">
+            <input type="range" id="t-hi" min="200" max="5000" step="10" value="2000" aria-label="Zielradius bis">
+          </div>
+          <div class="ticks"><span>200</span><span>5 000 mm</span></div>
+          <div class="askrow">
+            <span class="raster"><span class="lbl">Raster <span class="info" tabindex="0">i<span class="tip">Abstufung, in der es neue Fräser gibt. Feineres Raster erlaubt kleinere Knicke und damit größere Radien. Vorhandene Fräser sind davon nicht betroffen.</span></span></span><button class="stp" id="st-m" type="button" aria-label="Raster feiner">−</button><span class="val" id="st-v">0,5°</span><button class="stp" id="st-p" type="button" aria-label="Raster gröber">+</button></span>
+            <span class="raster"><span class="lbl">Bis <span class="info" tabindex="0">i<span class="tip">„Optimieren“ sucht für jede Anzahl zusätzlicher Fräser, von 1 bis zum eingestellten Wert, die Kombination, die den Zielradius möglichst vollständig abdeckt und dabei im Mittel die schmalsten Lamellen braucht. Ausgewertet an 81 gleichmäßig verteilten Radien im Ziel, die Ränder eingeschlossen. Ø ist die mittlere, max die breiteste nötige Lamelle. Ab vier Fräsern und bei feinem Raster sucht er mit Vorauswahl. Erreicht auch die größte Anzahl das Ziel nicht ganz, zeigt er die kleinste Lamellenbreite bis 60 mm, mit der es ginge.</span></span></span><button class="stp" id="n-m" type="button" aria-label="weniger Fräser">−</button><span class="val" id="n-v">3</span><button class="stp" id="n-p" type="button" aria-label="mehr Fräser">+</button><span class="lbl" style="margin-left:4px">Fräser</span></span>
+            <button class="btn" id="opt" type="button">Optimieren</button>
+          </div>
+          <div class="optlist" id="opt-ctrl"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="out">
+      <section id="s-opt" hidden><div class="optlist" id="opt-out"></div></section>
+      <section id="s-abdeckung">
+        <h2>Abdeckung <span class="info" tabindex="0">i<span class="tip">Welche Radien auf der Mittelachse erreichbar sind. Jede Bahn ist ein Knick (ein oder mehrere Fräserpaare) über die ganze Lamellenbreite. Ein Paar zählt nur, wenn der größere Flankenwinkel mindestens 10° hat, sonst hält der Verbund nicht. Voll gefärbt heißt mit vorhandenen Fräsern, schraffiert erst mit Ergänzung. Das gestrichelte Feld ist der Zielradius.</span></span></h2>
+        <div class="chart" id="chart"></div>
+      </section>
+
+      <section id="s-szenarien">
+        <h2>Szenarien <span class="info" tabindex="0">i<span class="tip">Bis zu zwölf runde Radien vom kleinsten bis zum größten abbildbaren, jeweils mit dem Fräserpaar, das die schmalste Lamelle braucht. Liegt ein Paar aus vorhandenen Fräsern höchstens 0,5 mm darüber, wird es vorgezogen. Je Zelle rund 200 mm Wand, alle im selben Maßstab. Grau: mit den gewählten Fräsern nicht abbildbar.</span></span><span class="hint">je Radius die schmalste Lamelle</span></h2>
+        <div class="scen" id="scen"></div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script>
+/*CORE*/
+</script>
+<script>
+/*APP*/
+</script>
