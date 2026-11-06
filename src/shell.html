@@ -1,7 +1,7 @@
 <title>Keilverschluss Fräser</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500&display=swap">
 <style>
 /* Werkstattzeichnung auf Schwarz: links Steuerung, rechts Ergebnis; auf dem Handy bleibt die Steuerung oben stehen */
 :root {
@@ -24,10 +24,10 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .layout { display: grid; grid-template-columns: 1fr; }
 .ctrl, .out { min-width: 0; }
 section { padding-block: 16px 20px; border-top: 1px solid var(--rule); min-width: 0; }
-h2 { font-weight: 300; font-size: 24px; letter-spacing: -0.02em; line-height: 1; margin: 0 0 14px; display: flex; align-items: center; gap: 10px; }
+h2 { font-weight: 400; font-size: 24px; letter-spacing: -0.02em; line-height: 1; margin: 0 0 14px; display: flex; align-items: center; gap: 10px; }
 .lbl { color: var(--mu); font-size: 12px; display: inline-flex; align-items: center; gap: 6px; position: relative; }
 h2 { position: relative; }
-.val { font-weight: 300; font-size: 20px; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.val { font-weight: 400; font-size: 20px; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .small { font-size: 11px; color: var(--mu); }
 .num { font-variant-numeric: tabular-nums; }
 .hint { color: var(--mu); font-size: 12px; margin-left: auto; font-weight: 400; letter-spacing: 0; }
@@ -61,13 +61,13 @@ h2 { position: relative; }
 .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 20px; }
 .chip { display: inline-flex; align-items: center; gap: 6px; }
 .chip .sw { width: 13px; height: 13px; flex: none; }
-.chip .v { font-weight: 300; font-size: 20px; line-height: 1; font-variant-numeric: tabular-nums; }
+.chip .v { font-weight: 400; font-size: 20px; line-height: 1; font-variant-numeric: tabular-nums; }
 .x { background: none; border: 0; color: var(--mu); font-size: 14px; cursor: pointer; padding: 2px 4px; line-height: 1; }
 .x:hover, .x:focus-visible { color: var(--fg); }
 .add { background: none; border: 0; color: var(--mu); font: inherit; font-size: 13px; cursor: pointer; padding: 4px 0; }
 .add:hover, .add:focus-visible { color: var(--fg); }
 .addform { display: inline-flex; align-items: center; gap: 8px; }
-.addform input { background: none; border: 0; border-bottom: 1px solid var(--fg); color: var(--fg); font: inherit; font-weight: 300; font-size: 20px; width: 64px; padding: 0 2px 2px; border-radius: 0; }
+.addform input { background: none; border: 0; border-bottom: 1px solid var(--fg); color: var(--fg); font: inherit; font-weight: 400; font-size: 20px; width: 64px; padding: 0 2px 2px; border-radius: 0; }
 .addform input:focus { outline: none; background: #141413; }
 .okb { background: none; border: 1px solid var(--mu); color: var(--fg); font: inherit; font-size: 12px; padding: 3px 8px; cursor: pointer; }
 
@@ -104,7 +104,7 @@ h2 { position: relative; }
 .scen { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 16px; }
 .cell { border-top: 1px solid var(--hl); padding-block: 12px 10px; min-width: 0; display: grid; gap: 10px; align-content: start; }
 .cell svg { width: 100%; height: auto; display: block; }
-.cell .r { font-weight: 300; font-size: 18px; line-height: 1; font-variant-numeric: tabular-nums; }
+.cell .r { font-weight: 400; font-size: 18px; line-height: 1; font-variant-numeric: tabular-nums; }
 .cell .head { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
 .cell .r, .cell .head .small { white-space: nowrap; }
 .cell .head { flex-wrap: wrap; }
@@ -114,7 +114,7 @@ h2 { position: relative; }
 /* Ein- und Ausklappen der Steuerung, nur auf dem Handy */
 .chead { display: none; background: none; border: 0; color: var(--mu); font: inherit; cursor: pointer; }
 .chead { width: 100%; align-items: center; gap: 12px; padding: 10px 0; text-align: left; }
-.chead .ttl { font-size: 17px; font-weight: 300; color: var(--fg); letter-spacing: -0.01em; flex: none; }
+.chead .ttl { font-size: 17px; font-weight: 400; color: var(--fg); letter-spacing: -0.01em; flex: none; }
 .chead .sum { flex: 1; color: var(--mu) !important; min-width: 0; color: var(--fg); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
 .chead .chev { display: inline-grid; place-items: center; width: 28px; height: 28px; transition: transform .2s; }
 /* Handy und Tablet: Steuerung bleibt oben stehen */
